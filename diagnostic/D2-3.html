@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cafesito</title>
+</head>
+<body>
+    <script>
+        const coffeeMachineDiagnosis = {
+    start: "idle",
+    steps: [
+        {
+            question: "Coin inserted?",
+            yes: "Right amount entered?",
+            no: "Coin return"
+        },
+        {
+            question: "Right amount entered?",
+            yes: "User chooses drink",
+            no: "Insert more coins"
+        },
+        {
+            question: "User chooses drink?",
+            yes: "Make coffee",
+            no: "Cancel and coin return"
+        },
+        {
+            question: "Make coffee?",
+            yes: "Cup removed?",
+            no: "Service needed"
+        },
+        {
+            question: "Cup removed?",
+            yes: "idle",
+            no: "Waiting for user"
+        }
+    ],
+    end: ["Coin return", "Insert more coins", "Cancel and coin return", "Service needed", "Waiting for user"]
+};
+
+// Mostrar la estructura en la consola
+//console.log(coffeeMachineDiagnosis);
+
+    </script>
+</body>
+</html>
+//muy parecido al codigo de la lampara

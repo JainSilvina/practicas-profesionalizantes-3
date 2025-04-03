@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>circuitos</title>
+</head>
+<body>
+        <script>
+            const logicCircuit = {
+         inputs: ["A", "B", "C"],  // Entradas
+         gates: [
+             { type: "AND", inputs: ["A", "B", "C"], output: "X" }, 
+             { type: "NOT", inputs: ["A"], output: "A'" },
+             { type: "NOT", inputs: ["B"], output: "B'" },
+             { type: "XOR", inputs: ["A'", "B'"], output: "Y" },
+             { type: "AND", inputs: ["Y", "C"], output: "Z" },
+             { type: "OR", inputs: ["X", "Z"], output: "OUT" }
+         ],
+         output: "OUT"  // Salida
+     }; 
+         </script>
+</body>
+</html>

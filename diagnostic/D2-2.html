@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Factura</title>
+</head>
+<body>
+    
+    
+    <script>
+        const factura = {
+            tipo: "Factura A",
+            numero: "0001-00000075",
+            fechaEmision: "23/02/2016",
+            responsableInscripto: true,
+            empresa: {
+                razonSocial: "EMPRESA S.A.",
+                direccion: "Belgrano 1010, Capital Federal",
+                telefono: "11 25879645",
+                CUIT: "20-28717013-1",
+                ingresosBrutos: "30-22222222-9",
+                inicioActividad: "01/01/2010"
+            },
+            cliente: {
+                razonSocial: "SOL S.R.L.",
+                direccion: "San Martín 587, Capital Federal, Buenos Aires",
+                CUIT: "30-11111111-8",
+                responsableInscripto: true,
+                condicionVenta: "Contado"
+            },
+            items: [
+                {
+                    codigo: "5896",
+                    descripcion: "LATEX INTERIOR BLANCO x20L",
+                    cantidad: 2,
+                    unidadMedida: "Unidades",
+                    precioUnitario: 515.36,
+                    bonificacion: 0,
+                    alicuotaIVA: 21,
+                    total: 1247.17
+                },
+                {
+                    codigo: "5897",
+                    descripcion: "PINCEL Nº 20",
+                    cantidad: 5,
+                    unidadMedida: "Unidades",
+                    precioUnitario: 82.36,
+                    bonificacion: 0,
+                    alicuotaIVA: 21,
+                    total: 498.28
+                }
+            ],
+            totales: {
+                subtotal: 1745.45,
+                importeNetoGravado: 1442.52,
+                IVA: {
+                    porcentaje: 21,
+                    monto: 302.93
+                },
+                totalFactura: 1745.45,
+                montoEnLetras: "Mil setecientos cuarenta y cinco con 45"
+            }
+        };
+
+
+    </script>
+</body>
+</html>

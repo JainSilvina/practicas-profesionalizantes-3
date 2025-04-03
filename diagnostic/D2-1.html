@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>equalizer</title>
+</head>
+<body>
+    <script>
+    const equalizer = {
+        title: "libvlc-go equalizer",
+        preset: "Classical",
+        adjustments: [
+            { band: "Preamp", value: 12.0 },
+            { band: "31.25 Hz", value: 0.0 },
+            { band: "62.5 Hz", value: 0.0 },
+            { band: "125 Hz", value: 0.0 },
+            { band: "250 Hz", value: 0.0 },
+            { band: "500 Hz", value: 0.0 },
+            { band: "1 KHz", value: 0.0 },
+            { band: "2 KHz", value: -7.2 },
+            { band: "4 KHz", value: -7.2 },
+            { band: "8 KHz", value: -7.2 },
+            { band: "16 KHz", value: -9.6 }
+        ],
+        inputFile: "C:\\libvlc-go-examples\\v3\\gtk3_equalizer\\nocturne.mp3",
+        state: "Paused"
+    };
+    //se puede agregar el boton choose file????
+    </script>
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lampara</title>
+</head>
+<body>
+    <script>
+       const lampDiagnosis = {
+    start: "Lamp doesn't work",
+    steps: [
+        {
+            question: "Lamp plugged in?",
+            yes: "Bulb burned out?",
+            no: "Plug in lamp"
+        },
+        {
+            question: "Bulb burned out?",
+            yes: "Replace bulb",
+            no: "Repair lamp"
+        }
+    ],
+    end: ["Plug in lamp", "Replace bulb", "Repair lamp"]
+};
+
+// Mostrar la estructura en la consola seria
+//console.log(lampDiagnosis);
+ 
+    </script>
+</body>
+</html>
