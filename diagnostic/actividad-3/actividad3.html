@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculadora</title>
+    <meta charset="utf-8">
+    <style>
+        .boton {
+            font-size: 140%;
+            border-radius: 7px;
+            width: 40px;
+            height: 40px;
+            margin: 3px;
+            cursor: pointer;
+        }
+        .botonNumerico {
+            background-color: #4721f1;
+            color: white;
+        }
+        .botonOperaciones {
+            background-color: #80e1ed;
+            color: black;
+        }
+        .botonIgual {
+            background-color: #ffffff;
+            color: black;
+        }
+        .botonBorrar {
+            width: 200px;
+            height: 35px;
+            background-color: #cf1be7;
+            font-size: 100%;
+        }
+        .display {
+            width: 200px;
+            height: 30px;
+            font-size: 18px;
+            text-align: right;
+            border-radius: 7px;
+        }
+    </style>
+</head>
+<body><!-- primera fila de la calculadora-->
+    <input id="display" class="display" type="text" readonly>
+    <table>
+        <tr><!-- segunda fila de la calculadora-->
+            <td><button id="btn9" class="boton botonNumerico">9</button></td>
+            <td><button id="btn8" class="boton botonNumerico">8</button></td>
+            <td><button id="btn7" class="boton botonNumerico">7</button></td>
+            <td><button id="btnSuma" class="boton botonOperaciones">+</button></td>
+        </tr>
+        <tr><!-- tercera fila de la calculadora-->
+            <td><button id="btn6" class="boton botonNumerico">6</button></td>
+            <td><button id="btn5" class="boton botonNumerico">5</button></td>
+            <td><button id="btn4" class="boton botonNumerico">4</button></td>
+            <td><button id="btnResta" class="boton botonOperaciones">-</button></td>
+        </tr>
+        <tr><!-- cuarta fila de la calculadora-->
+            <td><button id="btn3" class="boton botonNumerico">3</button></td>
+            <td><button id="btn2" class="boton botonNumerico">2</button></td>
+            <td><button id="btn1" class="boton botonNumerico">1</button></td>
+            <td><button id="btnMultiplica" class="boton botonOperaciones">*</button></td>
+        </tr>
+        <tr><!-- quinta fila de la calculadora-->
+            <td><button id="btn0" class="boton botonNumerico">0</button></td>
+            <td><button id="btnPunto" class="boton botonNumerico">.</button></td>
+            <td><button id="btnIgual" class="boton botonIgual">=</button></td>
+            <td><button id="btnDivide" class="boton botonOperaciones">/</button></td>
+        </tr>
+    </table><!-- ultima fila Borrar-->
+    <button id="btnBorrar" class="botonBorrar">Borrar</button>
+
+    <script>
+        const display = document.getElementById("display");
+
+        // Manejadores para números
+        function agregarNumero(valor) {
+            display.value += valor;
+        }
+
+        // Manejadores para operaciones
+        function agregarOperacion(operador) {
+            display.value += operador;
+        }
+
+        // Manejador de cálculo
+        function calcularResultado() {
+            try {
+                display.value = eval(display.value);
+            } catch {
+                display.value = "Error";
+            }
+        }
+
+        // Manejador de borrar
+        function borrarDisplay() {
+            display.value = "";
+        }
+
+        // Asignación de eventos por ID
+        document.getElementById("btn0").onclick = () => agregarNumero("0");
+        document.getElementById("btn1").onclick = () => agregarNumero("1");
+        document.getElementById("btn2").onclick = () => agregarNumero("2");
+        document.getElementById("btn3").onclick = () => agregarNumero("3");
+        document.getElementById("btn4").onclick = () => agregarNumero("4");
+        document.getElementById("btn5").onclick = () => agregarNumero("5");
+        document.getElementById("btn6").onclick = () => agregarNumero("6");
+        document.getElementById("btn7").onclick = () => agregarNumero("7");
+        document.getElementById("btn8").onclick = () => agregarNumero("8");
+        document.getElementById("btn9").onclick = () => agregarNumero("9");
+        document.getElementById("btnPunto").onclick = () => agregarNumero(".");
+
+        document.getElementById("btnSuma").onclick = () => agregarOperacion("+");
+        document.getElementById("btnResta").onclick = () => agregarOperacion("-");
+        document.getElementById("btnMultiplica").onclick = () => agregarOperacion("*");
+        document.getElementById("btnDivide").onclick = () => agregarOperacion("/");
+
+        document.getElementById("btnIgual").onclick = calcularResultado;
+        document.getElementById("btnBorrar").onclick = borrarDisplay;
+    </script>
+</body>
+</html>
