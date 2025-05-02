@@ -1,1 +1,7 @@
+Objeto: ventilador
+Propiedades/Atributos:
 
+
+
+
+Comportamiento:
