@@ -1,7 +1,21 @@
 
+
+Objeto: Semáforo
+Propiedades/Atributos:
+
 | Nombre         | Tipo de dato | Cte/Variable | Rango de valores posibles   | f(c)         |
 | -------------- | ------------ | ------------ | --------------------------- | ------------ |
 | colorActual    | string       | variable     | "rojo", "amarillo", "verde" | cambiarColor |
 | tiempoRojo     | int          | constante    | ≥ 0 segundos                |              |
 | tiempoAmarillo | int          | constante    | ≥ 0 segundos                |              |
 | tiempoVerde    | int          | constante    | ≥ 0 segundos                |              |
+
+
+Comportamiento:
+
+Nombre	Parámetros/Tipo	Retorno/Tipo
+cambiarColor	--	--
+iniciar	--	--
+detener	--	--
+
+
