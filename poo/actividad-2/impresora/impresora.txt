@@ -1,0 +1,24 @@
+
+
+Objeto: Impresora (Producto)
+Propiedades/Atributos:
+
+| Nombre       | Tipo de dato | Cte/Variable | Rango de valores posibles       | f(c)             |
+| ------------ | ------------ | ------------ | ------------------------------- | ---------------- |
+| modelo       | string       | constante    | "Brother HL-1210W", etc.        | --               |
+| marca        | string       | constante    | "Brother", etc.                 | --               |
+| precio       | double       | variable     | ≥ 0                             | actualizarPrecio |
+| stock        | int          | variable     | 0 .. n                          | vender, reponer  |
+| descripcion  | string       | constante    | texto libre                     | mostrarFicha     |
+| garantia     | string       | constante    | "12 meses", etc.                | --               |
+| fichaTecnica | objeto       | constante    | {conectividad, velocidad, etc.} | mostrarFicha     |
+
+
+su comportamiento es como un artículo de venta 
+
+| Nombre           | Parámetros/Tipo     | Retorno/Tipo |
+| ---------------- | ------------------- | ------------ |
+| vender           | unidades\:int       | bool (éxito) |
+| reponer          | unidades\:int       | --           |
+| actualizarPrecio | nuevoPrecio\:double | --           |
+| mostrarFicha     | --                  | objeto       |

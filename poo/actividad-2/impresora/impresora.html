@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Producto: Impresora</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f8f8;
+  padding: 20px;
+}
+
+table {
+  background-color: #fff;
+  border-collapse: collapse;
+  width: 50%;
+  min-width: 400px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+button {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#fichaTecnica {
+  background-color: #eef;
+  padding: 15px;
+  border: 1px solid #99c;
+  width: fit-content;
+}
+
+  </style>
+</head>
+<body>
+  <h2>Producto en Venta: Impresora Brother HL-1210W</h2>
+
+  <table border="1" cellpadding="5">
+    <tr>
+      <td><strong>Marca</strong></td>
+      <td id="marca">Brother</td>
+    </tr>
+    <tr>
+      <td><strong>Modelo</strong></td>
+      <td id="modelo">HL-1210W</td>
+    </tr>
+    <tr>
+      <td><strong>Precio</strong></td>
+      <td id="precio">$ 65.000</td>
+    </tr>
+    <tr>
+      <td><strong>Stock disponible</strong></td>
+      <td id="stock">10</td>
+    </tr>
+  </table>
+
+  <br>
+  <button onclick="venderUnidad()">Vender 1 unidad</button>
+  <button onclick="reponerStock()">Reponer stock</button>
+  <button onclick="cambiarPrecio()">Actualizar precio</button>
+  <button onclick="mostrarFichaTecnica()">Mostrar ficha técnica</button>
+
+  <div id="fichaTecnica" style="margin-top:20px; display:none;"></div>
+
+  <script>
+let producto = {
+  marca: "Brother",
+  modelo: "HL-1210W",
+  precio: 65000,
+  stock: 10,
+  fichaTecnica: {
+    conectividad: "Wi-Fi, USB 2.0",
+    velocidad: "20 ppm",
+    tipo: "Láser monocromática",
+    resolución: "2400 x 600 dpi",
+    bandeja: "150 hojas",
+    dimensiones: "340 x 238 x 189 mm",
+    peso: "4.6 kg"
+  }
+};
+
+function actualizarVista() {
+  document.getElementById("precio").innerText = "$ " + producto.precio;
+  document.getElementById("stock").innerText = producto.stock;
+}
+
+function venderUnidad() {
+  if (producto.stock > 0) {
+    producto.stock -= 1;
+    alert("Venta realizada con éxito.");
+  } else {
+    alert("No hay stock disponible.");
+  }
+  actualizarVista();
+}
+
+function reponerStock() {
+  let cantidad = prompt("¿Cuántas unidades desea agregar al stock?");
+  let valor = parseInt(cantidad);
+  if (!isNaN(valor) && valor > 0) {
+    producto.stock += valor;
+    alert("Stock actualizado.");
+  } else {
+    alert("Ingrese un número válido.");
+  }
+  actualizarVista();
+}
+
+function cambiarPrecio() {
+  let nuevo = prompt("Ingrese el nuevo precio:");
+  let valor = parseFloat(nuevo);
+  if (!isNaN(valor) && valor >= 0) {
+    producto.precio = valor;
+    alert("Precio actualizado.");
+  } else {
+    alert("Ingrese un valor válido.");
+  }
+  actualizarVista();
+}
+
+function mostrarFichaTecnica() {
+  let fichaDiv = document.getElementById("fichaTecnica");
+  fichaDiv.style.display = "block";
+  fichaDiv.innerHTML = "<h3>Ficha Técnica</h3><ul>";
+  for (let key in producto.fichaTecnica) {
+    fichaDiv.innerHTML += `<li><strong>${key}:</strong> ${producto.fichaTecnica[key]}</li>`;
+  }
+  fichaDiv.innerHTML += "</ul>";
+}   
+  </script>
+</body>
+</html>
+

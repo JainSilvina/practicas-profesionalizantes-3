@@ -1,0 +1,22 @@
+Objeto: Auto
+Propiedades/Atributos:     (color del auto, no es importante)
+
+| Nombre           | Tipo de dato | Cte/Variable | Rango de valores posibles | f(c)                        |
+| ---------------- | ------------ | ------------ | ------------------------- | --------------------------- |
+| marca            | string       | constante    | texto libre               | --                          |
+| modelo           | string       | constante    | texto libre               | --                          |                     |
+| encendido        | boolean      | variable     | true / false              | encender, apagar            |
+| velocidadActual  | double       | variable     | ≥ 0                       | acelerar, frenar            |
+| nivelCombustible | double       | variable     | 0.0 .. 100.0 %            | acelerar, cargarCombustible |
+
+
+Comportamiento:
+
+| Nombre            | Parámetros/Tipo    | Retorno/Tipo |
+| ----------------- | ------------------ | ------------ |
+| encender          | --                 | --           |
+| apagar            | --                 | --           |
+| acelerar          | cantidad\:double   | --           |
+| frenar            | cantidad\:double   | --           |
+| cargarCombustible | cantidad\:double   | --           |
+

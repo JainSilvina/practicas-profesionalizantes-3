@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Semáforo</title>
+  <style>
+    #semaforo {
+      width: 100px;
+      background-color: #e2d4d4;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .luz {
+      width: 80px;
+      height: 80px;
+      margin: 10px auto;
+      border-radius: 50%;
+      background-color: #111;
+      opacity: 0.3;
+    }
+
+    #rojo.encendido {
+      background-color: red;
+      opacity: 1;
+    }
+
+    #amarillo.encendido {
+      background-color: yellow;
+      opacity: 1;
+    }
+
+    #verde.encendido {
+      background-color: green;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <h2>Semáforo</h2>
+  <div id="semaforo">
+    <div id="rojo" class="luz"></div>
+    <div id="amarillo" class="luz"></div>
+    <div id="verde" class="luz"></div>
+  </div>
+
+  <button onclick="iniciarSemaforo()">Iniciar</button>
+  <button onclick="detenerSemaforo()">Detener</button>
+
+  <script>
+    let luces = ['rojo', 'verde', 'amarillo'];
+    let indice = 0;
+    let intervalo = null;
+
+    function encenderLuz(id) {
+      document.getElementById('rojo').classList.remove('encendido');
+      document.getElementById('amarillo').classList.remove('encendido');
+      document.getElementById('verde').classList.remove('encendido');
+      document.getElementById(id).classList.add('encendido');
+    }
+
+    function cambiarColor() {
+      encenderLuz(luces[indice]);
+      indice = (indice + 1) % luces.length;
+    }
+
+    function iniciarSemaforo() {
+      if (intervalo === null) {
+        cambiarColor();// empieza en cuanto se presiona iniciar
+        intervalo = setInterval(cambiarColor, 3000);// cambia cada 3 segundos
+      }
+    }
+
+    function detenerSemaforo() {
+      clearInterval(intervalo);
+      intervalo = null;
+    }
+  </script>
+</body>
+</html>

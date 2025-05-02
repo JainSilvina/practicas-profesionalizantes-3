@@ -1,0 +1,31 @@
+Proceso de abstracción: Reconocer lo indispensable de lo prescindible
+
+Objeto: Rociador
+
+Propiedades/Atributos:
+
+Nombre			| Tipo de dato 	| Cte/Variable | Rango de valores posibles  | f(c)
+-CapacidadEnML   double			 constante		 750.0  					| --
+-% de carga		 double			 variable		 0 .. 100					| rociar, cargar, vaciar
+
+
+Comportamiento:
+Nombre			| Parámetros/Tipo		      | Retorno/Tipo
+rociar 			  --                            --
+cargar			  sustancia:string, %:double    --			  
+vaciar		      --                            --
+
+
+
+
+
+Revisión:
+
+(lleno, vacio)
+-Gatillo
+-Tapa
+-Válvula
+-Sustancia		 string			 variable       
+tapar
+-Material		 string			 constante       ¿?
+destapar

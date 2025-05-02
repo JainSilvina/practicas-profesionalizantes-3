@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulador de Auto</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+
+table {
+  background-color: #fff;
+  border-collapse: collapse;
+  width: 60%;
+  min-width: 400px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+button {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+  <h2>Simulacion de Auto</h2>
+
+  <table border="1" cellpadding="5">
+    <tr>
+      <td><strong>Marca</strong></td>
+      <td id="marca">Fiat</td>
+    </tr>
+    <tr>
+      <td><strong>Modelo</strong></td>
+      <td id="modelo">600</td>
+    </tr>
+    <tr>
+      <td><strong>Encendido</strong></td>
+      <td id="estado">Apagado</td>
+    </tr>
+    <tr>
+      <td><strong>Velocidad actual</strong></td>
+      <td id="velocidad">0 km/h</td>
+    </tr>
+    <tr>
+      <td><strong>Nivel de combustible</strong></td>
+      <td id="combustible">100%</td>
+    </tr>
+  </table>
+
+  <br>
+
+  <button onclick="encender()">Encender</button>
+  <button onclick="apagar()">Apagar</button>
+  <button onclick="acelerar()">Acelerar</button>
+  <button onclick="frenar()">Frenar</button>
+  <button onclick="cargarCombustible()">Cargar combustible</button>
+ 
+
+  <script>
+    //
+    let auto = {
+  marca: "Fiat",
+  modelo: "600",
+  encendido: false,
+  velocidad: 0,
+  combustible: 100
+};
+
+function actualizarVista() {
+  document.getElementById("marca").innerText = auto.marca;
+  document.getElementById("modelo").innerText = auto.modelo;
+  document.getElementById("estado").innerText = auto.encendido ? "Encendido" : "Apagado";
+  document.getElementById("velocidad").innerText = auto.velocidad + " km/h";
+  document.getElementById("combustible").innerText = auto.combustible + "%";
+}
+
+function encender() {
+  if (!auto.encendido && auto.combustible > 0) {
+    auto.encendido = true;
+    alert("Auto encendido.");
+  } else if (auto.encendido) {
+    alert("Ya está encendido.");
+  } else {
+    alert("No hay combustible.");
+  }
+  actualizarVista();
+}
+
+function apagar() {
+  auto.encendido = false;
+  auto.velocidad = 0;
+  alert("Auto apagado.");
+  actualizarVista();
+}
+
+function acelerar() {
+  if (auto.encendido && auto.combustible > 0) {
+    auto.velocidad += 10;
+    auto.combustible -= 5;
+    if (auto.combustible < 0) auto.combustible = 0;
+  } else {
+    alert("El auto debe estar encendido y tener combustible.");
+  }
+  actualizarVista();
+}
+
+function frenar() {
+  if (auto.velocidad > 0) {
+    auto.velocidad -= 10;
+    if (auto.velocidad < 0) auto.velocidad = 0;
+  } else {
+    alert("El auto ya está detenido.");
+  }
+  actualizarVista();
+}
+
+function cargarCombustible() {
+  let cantidad = prompt("Ingrese cantidad de combustible a cargar (0 a 100):");
+  let valor = parseFloat(cantidad);
+  if (!isNaN(valor) && valor > 0) {
+    auto.combustible += valor;
+    if (auto.combustible > 100) auto.combustible = 100;
+  } else {
+    alert("Cantidad no válida.");
+  }
+  actualizarVista();
+}
+// Inicializar vista al cargar
+actualizarVista();
+
+  </script>
+</body>
+</html>
+
