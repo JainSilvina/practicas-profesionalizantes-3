@@ -174,7 +174,7 @@ function main() {
     setInterval(() => {
         const state = semaphore.getModelState();
         circle.update(state.green); // solo se mueve si luz verde esta encendida
-    }, 20); // 50 FPS
+    }, 20); 
 
     document.getElementById('on').onclick = () => semaphore.run();
     document.getElementById('off').onclick = () => semaphore.shutdown();
