@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Canvas Rectángulo Controlado</title>
+   
+    <style>
+        body { 
+            width: 70%;
+            height: 40%;
+            border: 2px solid black;
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background-color: #7ce0e7; 
+        }
+        canvas {
+            border: 1px solid #ccc; 
+            background-color: #fff; 
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="800" height="400"></canvas>
+
+    <script>
+        class Rectangle {  
+            constructor(x, y, width, height, color = 'blue', angle = 0) {  
+                this.x = x; 
+                this.y = y; 
+                this.width = width; 
+                this.height = height; 
+                this.color = color; 
+                this.angle = angle; 
+            } 
+
+            draw(ctx) { 
+                ctx.save(); 
+                ctx.translate(this.x, this.y); 
+                ctx.rotate(this.angle); 
+                ctx.fillStyle = this.color; 
+                ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height); 
+                ctx.restore(); 
+            } 
+
+            rotate(radians) { 
+                this.angle += radians; 
+            } 
+
+            moveForward(distance) { 
+                this.x += distance * Math.cos(this.angle); 
+                this.y += distance * Math.sin(this.angle); 
+            }
+
+            moveBackward(distance) { 
+                this.moveForward(-distance);
+            } 
+        } 
+
+        class RectangleController {  //crear un IF para que limmite el recorrido del rectangulo y no salga del margen establecido
+            
+            constructor(rectangle, canvas) { 
+                this.rectangle = rectangle; 
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d'); 
+                this.movementSpeed = 5; // velocidad  de movimiento
+                this.rotationSpeed = 0.05; // velocidad de rotacion
+
+                document.addEventListener('keydown', this.handleKeyDown.bind(this)); 
+                this.draw(); // Dibujar el rectángulo al inicio 
+            } 
+
+            clearCanvas() { 
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            } 
+
+            draw() { 
+                this.clearCanvas(); 
+                this.rectangle.draw(this.ctx); 
+            }
+
+             //FLECHAS DEL TECLADO
+            handleKeyDown(event) { 
+                switch (event.key) { 
+                    case 'ArrowUp': 
+                        this.rectangle.moveForward(this.movementSpeed); 
+                        break; 
+                    case 'ArrowDown': 
+                        this.rectangle.moveBackward(this.movementSpeed); 
+                        break; 
+                    case 'ArrowLeft': 
+                        this.rectangle.rotate(-this.rotationSpeed); 
+                        break; 
+                    case 'ArrowRight': 
+                        this.rectangle.rotate(this.rotationSpeed); 
+                        break; 
+                } 
+
+                  // para limitar el movimiento dentro del canvas
+                const halfWidth = this.rectangle.width / 2;
+                const halfHeight = this.rectangle.height / 2;
+
+                // Comprobar límites X
+                if (this.rectangle.x - halfWidth < 0) {
+                    this.rectangle.x = halfWidth;
+                } else if (this.rectangle.x + halfWidth > this.canvas.width) {
+                    this.rectangle.x = this.canvas.width - halfWidth;
+                }
+
+                // Comprobar límites Y
+                if (this.rectangle.y - halfHeight < 0) {
+                    this.rectangle.y = halfHeight;
+                } else if (this.rectangle.y + halfHeight > this.canvas.height) {
+                    this.rectangle.y = this.canvas.height - halfHeight;
+                }
+                //Fin de la lógica de límite
+
+
+                this.draw(); 
+            } 
+        } 
+
+        window.onload = function() { // Línea modificada (antes era solo `function main()`)
+            const canvas = document.getElementById('myCanvas'); // Línea modificada (antes se creaba el canvas con `createElement`)
+            const initialX = canvas.width / 2; 
+            const initialY = canvas.height / 2; 
+            const myRectangle = new Rectangle(initialX, initialY, 100, 50); 
+            const rectangleController = new RectangleController(myRectangle, canvas); 
+        }; // Línea modificada (antes terminaba `main`)
+
+        
+    </script>
+</body>
+</html>
 
