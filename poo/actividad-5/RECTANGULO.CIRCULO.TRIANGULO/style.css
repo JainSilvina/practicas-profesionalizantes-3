@@ -1,0 +1,115 @@
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start;
+    gap: 20px; 
+    padding: 20px; 
+    background-color: #f0f0f0; 
+}
+
+/* Estilos para el contenedor de controles (botones y selector de color) */
+.controls {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+    border: 1px solid #ccc; 
+    padding: 15px; 
+    background-color: #fff; 
+    border-radius: 5px; 
+}
+
+/* Estilos para los botones dentro del contenedor de controles */
+.controls button {
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer; 
+    border: 1px solid #007bff; 
+    background-color: #007bff; 
+    color: white; 
+    border-radius: 4px;
+    transition: background-color 0.2s; 
+}
+
+/* Estilos para los botones al pasar el ratón por encima */
+.controls button:hover {
+    background-color: #0056b3; 
+}
+
+/* Estilos para el contenedor del selector de color */
+.color-picker-container {
+    margin-top: 15px; 
+}
+
+/* Estilos para el cuadro que muestra el color seleccionado */
+.color-box {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+}
+
+/* Estilos para el contenedor del canvas */
+.canvas-container {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    position: relative; /* 
+}
+
+/* Estilos para el contenedor de la lista de figuras (la tabla) */
+.figure-list-container {
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 5px;
+    max-height: 400px; 
+    overflow-y: auto;
+}
+
+/* Estilos para el título de la lista de figuras */
+.figure-list-container h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+/* Estilos para la tabla de figuras */
+.figure-list-table {
+    width: 100%; 
+    border-collapse: collapse; 
+}
+
+/* Estilos para las celdas de encabezado y datos de la tabla */
+.figure-list-table th,
+.figure-list-table td {
+    border: 1px solid #ddd; 
+    padding: 8px; 
+    text-align: left; 
+}
+
+/* Estilos para las celdas de encabezado */
+.figure-list-table th {
+    background-color: #f2f2f2; 
+}
+
+/* Estilos para las filas de la tabla al pasar el ratón por encima */
+.figure-list-table tr:hover {
+    background-color: #f5f5f5; 
+    cursor: pointer; 
+}
+
+/* Estilos para la fila activa (seleccionada) de la tabla */
+.figure-list-table tr.active-row {
+    background-color: #e0f7fa; 
+    font-weight: bold; 
+}
+
+/* Estilos para el indicador de la figura activa debajo del canvas */
+.active-shape-indicator {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #007bff; 
+    background-color: #e6f7ff; 
+    border-radius: 4px;
+    text-align: center;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Actividad 5</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="controls">
+        <button id="createRectangleBtn">Crear rectángulo</button>
+        <button id="createCircleBtn">Crear círculo</button>
+        <button id="createTriangleBtn">Crear triángulo</button>
+
+        <div class="color-picker-container">
+            <h3>Color de la Figura</h3>
+            <input type="color" id="shapeColorPicker" value="#800080">
+            <div class="color-box" id="selectedColorBox" style="background-color: #1121f5;"></div>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="myCanvas" width="800" height="400"></canvas>
+        <div class="active-shape-indicator">
+            Figura activa seleccionada actual: <span id="activeShapeName">Ninguna</span>
+        </div>
+    </div>
+
+    <div class="figure-list-container">
+        <h3>Figuras creadas</h3>
+        <table class="figure-list-table" id="figureListTable">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>ID/Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <script src="shapes.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
