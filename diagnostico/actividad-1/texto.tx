@@ -1,0 +1,43 @@
+Entra a la carpeta del proyecto:
+cd "~/Escritorio/PRACTICAS 3/diagnostico/actividad-1"
+
+Crea el entorno virtual:
+python3 -m venv venv
+
+Activa el entorno:
+source venv/bin/activate
+(Notaras que aparece (venv) al principio de la linea de comandos).
+
+Instala las librerias necesarias:
+
+
+pip install flask flask-cors
+
+
+Despues:
+
+1. Inicializar la Base de Datos
+python3 backend/database.db
+
+2. Iniciar el Servidor (Backend)
+python3 backend/app.py
+
+3. Acceder a la Interfaz (Frontend)
+Abri el archivo index.html en el navegador.
+En VS Code, hacer click con el boton derecho del mouse e ir a la extension Open with Live Server
+para previsualizar los cambios en tiempo real en el puerto 5500.
+
+----------------------------------------------------------------
+
+Por las dudas: Reiniciar el servidor Flask
+Una vez que hayas ejecutado el script de la base de datos:
+
+Anda a la terminal donde tenes el error.
+
+Presiona Ctrl + C para detener el servidor.
+
+Volve a arrancarlo con:python3 backend/app.py
+
+
+
+

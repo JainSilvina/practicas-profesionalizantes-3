@@ -1,0 +1,39 @@
+import sqlite3
+
+def inicializar_sistema():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # Crear tabla unica según la consigna
+    cursor.execute('DROP TABLE IF EXISTS materiales')
+    cursor.execute('''
+        CREATE TABLE materiales (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL UNIQUE,
+            cantidad REAL NOT NULL,
+            unidad_medida TEXT NOT NULL
+        )
+    ''')
+
+    # Insertar los materiales obligatorios de la planta
+    materiales = [
+        ('Vidrio', 0, 'kg'),
+        ('Hierro', 0, 'kg'),
+        ('Aluminio', 0, 'kg'),
+        ('Cobre', 0, 'kg'),
+        ('Bronce', 0, 'kg'),
+        ('Carton', 0, 'kg'),
+        ('Papel Blanco', 0, 'kg'),
+        ('Tapas de Plastico', 0, 'unidades'),
+        ('Aceite de Girasol', 0, 'm³'),
+        ('Baterias de Vehiculos', 0, 'unidades')
+    ]
+
+    cursor.executemany('INSERT INTO materiales (nombre, cantidad, unidad_medida) VALUES (?, ?, ?)', materiales)
+    
+    conn.commit()
+    conn.close()
+    print("✅ Archivo 'database.db' creado con exito en la carpeta backend.")
+
+if __name__ == '__main__':
+    inicializar_sistema()

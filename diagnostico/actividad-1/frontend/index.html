@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLANTA RECICLADORA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+
+    <h1>PLANTA RECICLADORA</h1>
+    <p>Gestion de materiales</p>
+    </header>
+    <main>
+        <section id="alta-material">
+    <h2>Dar de Alta Nuevo Material</h2>
+    <div class="formulario">
+        <input type="text" id="nuevo-nombre" placeholder="Nombre (ej: Plomo)">
+        <input type="text" id="nueva-unidad" placeholder="Unidad (ej: kg)">
+        <button class="btn-compra" onclick="crearNuevoMaterial()">Crear Material</button>
+    </div>
+</section>
+<hr>
+        <section id="panel de operaciones">
+            <h2>Registrar operaciones</h2>
+            
+            <div class="formulario">
+                
+                <label for="select-material">Material:</label>
+            <select id="select-material">
+            <option value="">-- Cargando materiales... --</option>
+            </select>
+
+                <label for="input-cantidad">Cantidad:</label>
+                <input type="number" id="input-cantidad" step="0.1" placeholder="Ej: 10.5">
+
+                <div class="Botones">
+                    <button class="btn-compra" onclick="procesarOperacion('compra')">Registrar Compra (+)</button>
+                    <button class="btn-venta" onclick="procesarOperacion('venta')">Registrar Venta (-)</button>
+
+                </div>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="Panel de Stock">
+            <h2>Inventario Actual</h2>
+            <table id="tabla-stock">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th>stock Disponible</th>
+                        <th>Unidad de Medidas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
+    </main>
+   <script src="script.js"></script>
+</body>
+</html>
