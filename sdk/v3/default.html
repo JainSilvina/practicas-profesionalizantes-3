@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Prueba de Autorización</title>
+    </head>
+    <body>
+        <h1>Registro de usuarios</h1>
+        <fieldset style="margin-bottom: 15px; padding: 10px;">
+            <legend>Crear Cuenta Nueva</legend>
+            <label>Usuario:</label>
+            <input id="regUser" required><br>
+            <label>Password:</label>
+            <input type="password" id="regPass" required><br>
+            <button id="btnRegister">Crear usuario</button>
+        </fieldset>
+
+        <hr>
+        <h2>Control de Sesión (Login / Logout)</h2>
+        <fieldset style="margin-bottom: 15px; padding: 10px;">
+            <legend>Credenciales de Acceso</legend>
+            <label>Usuario:</label>
+            <input id="txtUser" value="test_user" placeholder="Usuario de la BD">
+            <label>Password:</label>
+            <input type="password" id="txtPass" value="123456" placeholder="Contraseña">
+            <button id="btnLogin">Iniciar Sesión</button>
+            <button id="btnLogout" disabled>Cerrar Sesión</button>
+            <span id="sessionStatus" style="margin-left:15px; font-weight:bold; color:red;">Sesión Cerrada</span>
+        </fieldset>
+        <hr>
+        <h2>Panel de Pruebas de Permisos (Usuario: admin)</h2>
+        <button id="btnLog">Ejecutar /log (Permitido)</button>
+        <button id="btnHello">Ejecutar /sayHello (Denegado)</button>
+        
+        <div id="resultado" style="margin-top: 15px; font-weight: bold;"></div>
+    </body>
+
+    <script>
+    // Variable global para conservar el contexto de sesión activo
+    let currentSessionId = null;
+
+    // Función tradicional para consumir las respuestas JSON del servidor sin usar "=>"
+    async function realizarPeticion(url) {
+        const resDiv = document.getElementById("resultado");
+        resDiv.style.color = "black";
+        resDiv.innerText = "Enviando petición a " + url + "...";
+        
+        try {
+            // Se inyecta dinámicamente el sessionId por parámetro Query string
+            const urlConSesion = url + "?sessionId=" + currentSessionId;
+            const response = await fetch(urlConSesion); 
+            const data = await response.json();
+            
+            if (response.ok) {
+                resDiv.style.color = "green";
+                resDiv.innerText = "Respuesta del Servidor: " + (data.message || JSON.stringify(data));
+            } else {
+                resDiv.style.color = "red";
+                resDiv.innerText = "Error del Servidor: " + data.error;
+            }
+        } catch (err) {
+            resDiv.style.color = "red";
+            resDiv.innerText = "Error de red: " + err.message;
+        }
+    }
+
+    // CORRECCIÓN:para registrar usuarios en la misma página
+    async function onBtnRegisterClick() {
+        const u = document.getElementById("regUser").value;
+        const p = document.getElementById("regPass").value;
+        const resDiv = document.getElementById("resultado");
+
+        if (!u || !p) {
+            resDiv.innerText = "Por favor, completa ambos campos de registro.";
+            resDiv.style.color = "red";
+            return;
+        }
+
+        resDiv.style.color = "black";
+        resDiv.innerText = "Procesando registro en el servidor...";
+
+        try {
+            const response = await fetch("/register?username=" + encodeURIComponent(u) + "&password=" + encodeURIComponent(p));
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                resDiv.style.color = "green";
+                resDiv.innerText = "Usuario creado con éxito. ID asignado: " + data.userId;
+                document.getElementById("regUser").value = "";
+                document.getElementById("regPass").value = "";
+            } else {
+                resDiv.style.color = "red";
+                resDiv.innerText = "Error en el registro: " + (data.error || JSON.stringify(data));
+            }
+        } catch (err) {
+            resDiv.style.color = "red";
+            resDiv.innerText = "Error al conectar para registrar usuario: " + err.message;
+        }
+    }
+
+    // Función para interactuar con el endpoint síncrono /login del Backend
+    async function onBtnLoginClick() {
+        const u = document.getElementById("txtUser").value;
+        const p = document.getElementById("txtPass").value;
+        const resDiv = document.getElementById("resultado");
+
+        try {
+            const response = await fetch("/login?username=" + encodeURIComponent(u) + "&password=" + encodeURIComponent(p));
+            const data = await response.json();
+
+            if (data.status === "success") 
+            {
+                currentSessionId = data.sessionId;
+                
+                // Actualizamos estados visuales de los elementos de la interfaz
+                document.getElementById("sessionStatus").innerText = "Sesión Activa: " + u;
+                document.getElementById("sessionStatus").style.color = "green";
+                document.getElementById("btnLogin").disabled = true;
+                document.getElementById("btnLogout").disabled = false;
+                resDiv.innerText = "Autenticación exitosa.";
+                resDiv.style.color = "green";
+            } else {
+                resDiv.innerText = "Fallo de Login: " + data.error;
+                resDiv.style.color = "red";
+            }
+        } catch (err) {
+            resDiv.innerText = "Error al conectar para login: " + err.message;
+            resDiv.style.color = "red";
+        }
+    }
+
+    // Función para destruir la sesión activa mediante el endpoint /logout
+    async function onBtnLogoutClick() 
+    {
+        try {
+            await fetch("/logout?sessionId=" + currentSessionId);
+        } catch (e) {
+            // Falla silenciosa si el servidor ya la eliminó
+        }
+    
+        currentSessionId = null;
+        document.getElementById("sessionStatus").innerText = "Sesión Cerrada";
+        document.getElementById("sessionStatus").style.color = "red";
+        document.getElementById("btnLogin").disabled = false;
+        document.getElementById("btnLogout").disabled = true;
+        document.getElementById("resultado").innerText = "Sesión destruida correctamente.";
+        document.getElementById("resultado").style.color = "black";
+    }
+
+    function onBtnLogClick() {
+        realizarPeticion("/log");
+    }
+
+    function onBtnHelloClick() {
+        realizarPeticion("/sayHello");
+    }
+
+    function main() {
+        document.getElementById("btnLog").onclick = onBtnLogClick;
+        document.getElementById("btnHello").onclick = onBtnHelloClick;
+
+        document.getElementById("btnLogin").onclick = onBtnLoginClick;
+        document.getElementById("btnLogout").onclick = onBtnLogoutClick;
+        
+        document.getElementById("btnRegister").onclick = onBtnRegisterClick;
+    }
+
+    window.onload = main;
+    </script>
+</html>
