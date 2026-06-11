@@ -39,14 +39,14 @@
     // Variable global para conservar el contexto de sesión activo
     let currentSessionId = null;
 
-    // Función tradicional para consumir las respuestas JSON del servidor 
+    // Función tradicional para consumir las respuestas JSON del servidor
     async function realizarPeticion(url) {
         const resDiv = document.getElementById("resultado");
         resDiv.style.color = "black";
         resDiv.innerText = "Enviando petición a " + url + "...";
         
         try {
-            // Se inyecta dinámicamente el sessionId por parámetro Query string
+            // Se inyecta dinámicamente el sessionId por parámetro 
             const urlConSesion = url + "?sessionId=" + currentSessionId;
             const response = await fetch(urlConSesion); 
             const data = await response.json();
