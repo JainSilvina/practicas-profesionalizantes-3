@@ -1,3 +1,29 @@
+// agregado ----
+
+import crypto from 'node:crypto'; // Importación nativa al inicio del archivo
+
+function calcularHashSHA256Sincrono(cadena) 
+{
+
+    const hashBuffer = crypto.createHash('sha256').update(cadena).digest();
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    
+    
+    let hashHex = "";
+    for (let i = 0; i < hashArray.length; i++) 
+    {
+        let byteHex = hashArray[i].toString(16);
+        if (byteHex.length < 2) 
+        {
+            byteHex = "0" + byteHex;
+        }
+        hashHex = hashHex + byteHex;
+    }
+    
+    return hashHex;
+}
+
+//---------------------
 let userSessions = new Map();
 
 function createSession(username) 
@@ -26,7 +52,7 @@ function deleteSession(sessionId)
 }
 
 
-// --- COMPONENTE: AUTENTICADOR ---
+// --- modificado ----COMPONENTE: AUTENTICADOR ---
 function authenticate(db, username, password) 
 {
     const sql = "SELECT password FROM user WHERE username = ?";
@@ -35,9 +61,16 @@ function authenticate(db, username, password)
         const stmt = db.prepare(sql);
         const row = stmt.get(username);
 
-        if (row && row.password === password) 
+        if (row) 
         {
-            return true;
+            // Calculamos el hash de la clave ingresada en el formulario web
+            const inputPasswordHash = calcularHashSHA256Sincrono(password);
+            
+            // Comparación directa de los hashes síncronos
+            if (row.password === inputPasswordHash) 
+            {
+                return true;
+            }
         }
         return false;
     } 
@@ -47,7 +80,7 @@ function authenticate(db, username, password)
         throw err;
     }
 }
-
+//---------------------------
 
 // --- COMPONENTE: AUTORIZADOR ---
 // Valida si el usuario pertenece a un grupo asociado al path del endpoint
@@ -75,13 +108,18 @@ function authorize(db, username, endpointPath)
     }
 }
 
+//modificado para el punto 3
 function createUser(db, username, password) 
 {
     const insertUserSql = "INSERT INTO user (username, password) VALUES (?, ?)";
     try 
     {
+        // Calculamos el hash síncronamente antes de insertar en la base de datos
+        const passwordHash = calcularHashSHA256Sincrono(password);
+
         const stmt = db.prepare(insertUserSql);
-        const result = stmt.run(username, password);
+        const result = stmt.run(username, passwordHash); 
+        
         return { success: true, userId: result.lastInsertRowid };
     } 
     catch (err) 
@@ -90,10 +128,10 @@ function createUser(db, username, password)
         {
             throw new Error("El nombre de usuario ya existe.");
         }
-        throw new Error("Error al crear el usuario: " + err.message);
+        throw err;
     }
 }
-
+//-----------------------------------------------------
 export { 
     authenticate, 
     authorize, 
