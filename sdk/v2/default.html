@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consola de Administración</title>
+</head>
+<body>
+
+    <h1>Gestión General (ABM)</h1>
+    
+    <h3>Usuarios (Alta, Baja y Roles)</h3>
+    <form id="formRegistro">
+        <input id="regUsername" placeholder="Usuario" required />
+        <input type="password" id="regPassword" placeholder="Contraseña" required />
+        <button type="submit">Registrar Usuario</button>
+    </form>
+    <br>
+    <form id="formBaja">
+        <input id="delUsername" placeholder="Usuario a eliminar" required />
+        <button type="submit">Eliminar Usuario</button>
+    </form>
+    <br>
+    <form id="formPermisos">
+        <input id="roleUsername" placeholder="Usuario" required />
+        <select id="roleSelect">
+            <option value="user">User</option>
+            <option value="editor">Editor</option>
+            <option value="admin">Admin</option>
+        </select>
+        <button type="submit">Actualizar Rol</button>
+    </form>
+
+    <hr />
+
+    <h3>Grupos (Alta y Baja)</h3>
+    <form id="formGrupo">
+        <input id="groupName" placeholder="Nombre del nuevo Grupo" required />
+        <button type="submit">Crear Grupo</button>
+    </form>
+    <br>
+    <form id="formBajaGrupo">
+        <input id="delGroupName" placeholder="Nombre del Grupo a borrar" required />
+        <button type="submit">Eliminar Grupo</button>
+    </form>
+
+    <hr />
+
+    <h3>Miembros de Grupos (Alta y Baja)</h3>
+    <form id="formAddMiembro">
+        <input type="number" id="midGroupId" placeholder="ID Grupo" required />
+        <input type="number" id="midUserId" placeholder="ID Usuario" required />
+        <button type="submit">Vincular Miembro</button>
+    </form>
+    <br>
+    <form id="formRemMiembro">
+        <input type="number" id="remGroupId" placeholder="ID Grupo" required />
+        <input type="number" id="remUserId" placeholder="ID Usuario" required />
+        <button type="submit">Remover Miembro</button>
+    </form>
+
+    <hr />
+    <button id="btnMsg">Enviar Ping (/showMessage)</button>
+
+    <script>
+    // Procesamiento tradicional de la respuesta JSON del servidor
+    function procesarRespuesta(data) {
+        if (data.status) {
+            if (data.data && data.data.id) {
+                alert("¡Operación realizada con éxito! ID asignado: " + data.data.id);
+            } else {
+                alert("¡Operación realizada con éxito!");
+            }
+        } else {
+            alert("Error: " + data.error);
+        }
+    }
+
+    function capturarErrorConexion(e) {
+        alert("Error de conexión con el servidor backend.");
+    }
+
+    // corregido
+  function enviar(url, params) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          
+            if (xhr.status === 200 || xhr.status === 201) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    procesarRespuesta(data);
+                } catch (e) {
+                    capturarErrorConexion();
+                }
+            } else {
+                capturarErrorConexion();
+            }
+        }
+    };
+    
+    xhr.send(params);
+}
+    // --- MANEJADORES DE ENVÍO DE FORMULARIOS ---
+
+    function manejarRegistro(e) {
+        e.preventDefault();
+        const p = new URLSearchParams();
+        p.append('username', document.getElementById('regUsername').value);
+        p.append('password', document.getElementById('regPassword').value);
+        enviar('/register', p);
+        e.target.reset();
+    }
+
+    function manejarBajaUsuario(e) {
+        e.preventDefault();
+        const p = new URLSearchParams();
+        p.append('username', document.getElementById('delUsername').value);
+        enviar('/deleteUser', p);
+        e.target.reset();
+    }
+
+    function manejarPermisos(e) {
+        e.preventDefault();
+        const p = new URLSearchParams();
+        p.append('username', document.getElementById('roleUsername').value);
+        p.append('role', document.getElementById('roleSelect').value);
+        enviar('/updateUserRole', p);
+        e.target.reset();
+    }
+
+    function manejarAltaGrupo(e) {
+        e.preventDefault();
+        const p = new URLSearchParams();
+        p.append('name', document.getElementById('groupName').value);
+        enviar('/createGroup', p);
+        e.target.reset();
+    }
+
+    function manejarBajaGrupo(e) {
+        e.preventDefault();
+        const p = new URLSearchParams();
+        p.append('name', document.getElementById('delGroupName').value);
+        enviar('/deleteGroup', p);
+        e.target.reset();
+    }
+
+    function manejarAltaMiembro(e) {
+        e.preventDefault();
+        const p = new URLSearchParams();
+        p.append('groupId', document.getElementById('midGroupId').value);
+        p.append('userId', document.getElementById('midUserId').value);
+        enviar('/addMemberToGroup', p);
+        e.target.reset();
+    }
+
+    function manejarBajaMiembro(e) {
+        e.preventDefault();
+        const p = new URLSearchParams();
+        p.append('groupId', document.getElementById('remGroupId').value);
+        p.append('userId', document.getElementById('remUserId').value);
+        enviar('/removeMemberFromGroup', p);
+        e.target.reset();
+    }
+
+    function alertarMensajeServidor(d) {
+        alert(d.message);
+    }
+// corregido
+   function manejarPingMensaje() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/showMessage", true);
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                var data = JSON.parse(xhr.responseText);
+                alertarMensajeServidor(data);
+            } catch (e) {
+                capturarErrorConexion();
+            }
+        }
+    };
+    
+    xhr.send();
+}
+//
+    function main() {
+        document.getElementById('formRegistro').onsubmit = manejarRegistro;
+        document.getElementById('formBaja').onsubmit = manejarBajaUsuario;
+        document.getElementById('formPermisos').onsubmit = manejarPermisos;
+        document.getElementById('formGrupo').onsubmit = manejarAltaGrupo;
+        document.getElementById('formBajaGrupo').onsubmit = manejarBajaGrupo;
+        document.getElementById('formAddMiembro').onsubmit = manejarAltaMiembro;
+        document.getElementById('formRemMiembro').onsubmit = manejarBajaMiembro;
+        document.getElementById('btnMsg').onclick = manejarPingMensaje;
+    }
+    
+    window.onload = main;
+    </script>
+</body>
+</html>
