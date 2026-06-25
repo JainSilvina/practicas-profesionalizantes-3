@@ -2,11 +2,11 @@ import { createServer } from 'node:http';
 import { URL } from 'node:url';
 import { readFileSync } from 'node:fs';
 
-import { connect_db } from './database.js';
-import { authorize, getSession, hasSession } from './models.js'; 
+import { connectDb } from './database.js';
+import { authenticateById, authorizeById } from './models.js';//   nuevo
 import * as handlers from './handlers.js';
 
-function default_config() 
+function defaultConfig() 
 {
     return {
         server: { ip: '0.0.0.0', port: 3000 }, 
@@ -14,38 +14,35 @@ function default_config()
     };
 }
 
-function load_config() 
+function loadConfig() 
 {
     try {
         const data = readFileSync('./config.json', 'utf-8');
         return JSON.parse(data);
     } catch (error) {
-        return default_config();
+        return defaultConfig();
     }
 }
 
-const config = load_config();
-const db = connect_db(config.database.path);
+const config = loadConfig();
+const db = connectDb(config.database.path);
 
 let router = new Map();
 
-// Mapeo correcto traspasando los argumentos a las funciones lineales de handlers.js
-router.set('/login', function(request, response) { return handlers.login_handler(config, db, request, response); });
-router.set('/logout', function(request, response) { return handlers.logout_handler(config, request, response); });
-router.set('/register', function(request, response) { return handlers.register_handler(config, db, request, response); });
+router.set('/login', function(request, response) { return handlers.loginHandler(config, db, request, response); });
+router.set('/logout', function(request, response) { return handlers.logoutHandler(config, request, response); });
+router.set('/register', function(request, response) { return handlers.registerHandler(config, db, request, response); });
 
-// Endpoints protegidos mapeados con sus nombres exactos de handlers.js
-router.set('/log', handlers.log_handler);
-router.set('/sayHello', handlers.say_hello_handler); // CORREGIDO: say_hello_handler usa guiones bajos
+router.set('/log', handlers.logHandler);
+router.set('/sayHello', handlers.sayHelloHandler);
 
-function request_dispatcher(request, response) 
-{
-    //  Cabeceras CORS obligatorias (Punto 1)
+function requestDispatcher(request, response) 
+{ 
+    // Cabeceras CORS 
     response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    response.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-user-id, x-api-key, x-api-version');
 
-    // Pre-vuelo CORS obligatorio
     if (request.method === 'OPTIONS') 
     {
         response.writeHead(204);
@@ -53,68 +50,67 @@ function request_dispatcher(request, response)
         return;
     }
 
-    //  Extraer path limpio
-    const urlParseada = new URL(request.url, `http://localhost:3000`);
+    const urlParseada = new URL(request.url, 'http://localhost:' + config.server.port);
     const path = urlParseada.pathname; 
 
-    // Interceptar /login y /register si vienen por POST para inyectar los datos en searchParams 
-    // y mantener la compatibilidad con la estructura actual de tu handlers.js sin romper nada.
-    if ((path === '/login' || path === '/register') && request.method === 'POST') {
+  //post
+    if (path === '/register' && request.method === 'POST') {
         let body = '';
-        request.on('data', chunk => { body += chunk.toString(); });
-        request.on('end', () => {
+        request.on('data', function(chunk) { body += chunk.toString(); });
+        request.on('end', function() {
             try {
                 const datos = JSON.parse(body);
-                // Inyectamos de forma dinámica los parámetros en el request.url original
-                request.url = `${path}?username=${encodeURIComponent(datos.username || '')}&password=${encodeURIComponent(datos.password || '')}`;
+               
+                request.bodyParameters = datos;
             } catch (e) {
-                // Si el formato no es JSON, continúa de forma nativa
+                response.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+                response.end(JSON.stringify({ exception: "BadRequest", detail: "Formato JSON inválido en el cuerpo." }));
+                return;
             }
             
             const handler = router.get(path);
-            if (handler) return handler(request, response);
+            if (handler) {
+                handler(request, response);
+            }
         });
-        return;
+        return; 
     }
 
-    // Buscar si existe un manejador para el resto de las rutas
     const handler = router.get(path);
 
     if (handler)
     {
-        // Endpoints del sistema que requieren evaluación de sesión y permisos
         const endpointsProtegidos = ['/log', '/sayHello'];
         
         if (endpointsProtegidos.includes(path)) 
         {
-            const sessionId = urlParseada.searchParams.get("sessionId");    
+            const userId = request.headers['x-user-id'];   
+            const apiKey = request.headers['x-api-key'];   
             
-            // Verificación robusta de la existencia de la sesión
-            if (!sessionId || !hasSession(sessionId)) 
+            // 401
+            if (!userId || !apiKey) 
             {
                 response.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
-                response.end(JSON.stringify({ error: "401 Unauthorized: Debe iniciar sesión." }));
+                response.end(JSON.stringify({ exception: "Unauthorized", detail: "Cabeceras de autenticación ausentes." }));
                 return;
             }
 
-            const sessionData = getSession(sessionId);
-            if (!sessionData || !sessionData.username) {
+            const estaAutenticado = authenticateById(db, userId, apiKey);
+            if (!estaAutenticado) 
+            {
                 response.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
-                response.end(JSON.stringify({ error: "401 Unauthorized: Estructura de sesión inválida." }));
+                response.end(JSON.stringify({ exception: "Unauthorized", detail: "Credenciales incorrectas." }));
                 return;
             }
 
-            const usuarioActivo = sessionData.username;
-            // Quitamos la barra inicial para que coincida con la base de datos ('log' o 'sayHello')
             const pathLimpio = path.startsWith('/') ? path.slice(1) : path;
-
-            // CONTROL DEL COMPONENTE AUTORIZADOR 
-            const estaAutorizado = authorize(db, usuarioActivo, pathLimpio);
+            const estaAutorizado = authorizeById(db, userId, pathLimpio);
             
+            // 403
             if (!estaAutorizado) 
             {
                 response.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
-                response.end(JSON.stringify({ error: "403 Forbidden: Acción denegada para este usuario." }));
+                response.end(JSON.stringify({ exception: "Forbidden", detail: "Acción denegada para este usuario." }));
                 return;
             }
         }
@@ -123,12 +119,13 @@ function request_dispatcher(request, response)
     }
     else
     {
-        response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-        response.end(`Ruta ${path} no encontrada.`);
+        //  404
+        response.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+        response.end(JSON.stringify({ exception: "NotFound", detail: "Ruta " + path + " no encontrada." }));
     }
 }
-
-const server = createServer(request_dispatcher);
+//----
+const server = createServer(requestDispatcher);
 
 server.listen(config.server.port, config.server.ip, function() 
 {

@@ -1,13 +1,9 @@
-// agregado ----
+import crypto from 'node:crypto';
 
-import crypto from 'node:crypto'; // Importación nativa al inicio del archivo
-
-function calcularHashSHA256Sincrono(cadena) 
+function calcularHashSha256Sincrono(cadena) 
 {
-
     const hashBuffer = crypto.createHash('sha256').update(cadena).digest();
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    
     
     let hashHex = "";
     for (let i = 0; i < hashArray.length; i++) 
@@ -23,7 +19,6 @@ function calcularHashSHA256Sincrono(cadena)
     return hashHex;
 }
 
-//---------------------
 let userSessions = new Map();
 
 function createSession(username) 
@@ -51,8 +46,6 @@ function deleteSession(sessionId)
     return userSessions.delete(sessionId);
 }
 
-
-// --- modificado ----COMPONENTE: AUTENTICADOR ---
 function authenticate(db, username, password) 
 {
     const sql = "SELECT password FROM user WHERE username = ?";
@@ -63,10 +56,7 @@ function authenticate(db, username, password)
 
         if (row) 
         {
-            // Calculamos el hash de la clave ingresada en el formulario web
-            const inputPasswordHash = calcularHashSHA256Sincrono(password);
-            
-            // Comparación directa de los hashes síncronos
+            const inputPasswordHash = calcularHashSha256Sincrono(password);
             if (row.password === inputPasswordHash) 
             {
                 return true;
@@ -80,10 +70,7 @@ function authenticate(db, username, password)
         throw err;
     }
 }
-//---------------------------
 
-// --- COMPONENTE: AUTORIZADOR ---
-// Valida si el usuario pertenece a un grupo asociado al path del endpoint
 function authorize(db, username, endpointPath) 
 {
     const sql = `
@@ -108,15 +95,12 @@ function authorize(db, username, endpointPath)
     }
 }
 
-//modificado para el punto 3.3
 function createUser(db, username, password) 
 {
     const insertUserSql = "INSERT INTO user (username, password) VALUES (?, ?)";
     try 
     {
-        // Calculamos el hash síncronamente antes de insertar en la base de datos
-        const passwordHash = calcularHashSHA256Sincrono(password);
-
+        const passwordHash = calcularHashSha256Sincrono(password);
         const stmt = db.prepare(insertUserSql);
         const result = stmt.run(username, passwordHash); 
         
@@ -131,7 +115,46 @@ function createUser(db, username, password)
         throw err;
     }
 }
-//-----------------------------------------------------
+
+//nuevo-----
+function authenticateById(db, userId, password) 
+{
+    const sql = "SELECT password FROM user WHERE id = ?";
+    try 
+    {
+        const stmt = db.prepare(sql);
+        const row = stmt.get(userId);
+
+        if (row) 
+        {
+            const inputPasswordHash = calcularHashSha256Sincrono(password);
+            return row.password === inputPasswordHash;
+        }
+        return false;
+    } 
+    catch (err) 
+    {
+        console.error("Error en el Autenticador por ID:", err);
+        throw err;
+    }
+}
+
+function authorizeById(db, userId, endpointPath) 
+{
+    const sql = "SELECT count(*) as total FROM access a JOIN members m ON a.id_group = m.id_group JOIN endpoint e ON a.id_endpoint = e.id WHERE m.id_user = ? AND e.path = ?";
+    try 
+    {
+        const stmt = db.prepare(sql);
+        const row = stmt.get(userId, endpointPath); 
+        return row.total > 0;
+    } 
+    catch (err) 
+    {
+        console.error("Error en el Autorizador por ID:", err);
+        throw err;
+    }
+}
+
 export { 
     authenticate, 
     authorize, 
@@ -139,5 +162,7 @@ export {
     createSession, 
     getSession, 
     hasSession, 
-    deleteSession 
+    deleteSession,
+    authenticateById, // nuevo
+    authorizeById     // nuevo
 };

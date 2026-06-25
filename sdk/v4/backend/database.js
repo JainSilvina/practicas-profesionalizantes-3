@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import { resolve } from 'node:path';
 
-function connect_db(path) 
+function connectDb(path) 
 {
     const dbPath = resolve(path);
     try 
@@ -14,4 +14,7 @@ function connect_db(path)
     }
 }
 
-export { connect_db };
+export { connectDb };
+
+
+
