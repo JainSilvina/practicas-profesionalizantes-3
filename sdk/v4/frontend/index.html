@@ -2,7 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>Prueba de Autorización</title>
+        <title>Prueba de Autorización jain</title>
     </head>
     <body>
         <h1>Registro de usuarios V4</h1>
@@ -35,36 +35,49 @@
         <div id="resultado" style="margin-top: 15px; font-weight: bold;"></div>
     </body>
 
-    <script>
-    const BASE_URL = "http://localhost:3000";//vericar si ahora anda-------
-    let currentSessionId = null; 
+   <script>
+    const BASE_URL = "http://localhost:3000";
+    
+    
+    let currentUserId = null; 
+    let currentApiKey = null; 
 
-    // Función corregida para consumir las respuestas de la WebAPI distribuidora
-    async function realizarPeticion(endpoint) { 
+   function realizarPeticion(endpoint) 
+    { 
         const resDiv = document.getElementById("resultado");
         resDiv.style.color = "black";
         resDiv.innerText = "Enviando petición a " + endpoint + "...";
 
-    try {
-        const urlConSesion = BASE_URL + endpoint + "?sessionId=" + currentSessionId;
-        const response = await fetch(urlConSesion); 
-        const data = await response.json();
-        //------fin de correccion--------
-            if (response.ok) {
-                resDiv.style.color = "green";
-                resDiv.innerText = "Respuesta del Servidor: " + (data.message || JSON.stringify(data));
-            } else {
-                resDiv.style.color = "red";
-                resDiv.innerText = "Error del Servidor: " + (data.error || JSON.stringify(data));
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", BASE_URL + endpoint, true);
+        
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("x-user-id", currentUserId);
+        xhr.setRequestHeader("x-api-key", currentApiKey);
+        xhr.setRequestHeader("x-api-version", "1.0"); // Inyeccion obligatoria de version
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                try {
+                    const data = JSON.parse(xhr.responseText);
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resDiv.style.color = "green";
+                        resDiv.innerText = "Respuesta del Servidor: " + (data.message || JSON.stringify(data));
+                    } else {
+                        resDiv.style.color = "red";
+                        // Lectura de la estructura 
+                        resDiv.innerText = "Error HTTP " + xhr.status + " [" + data.exception + "]: " + data.detail;
+                    }
+                } catch (err) {
+                    resDiv.style.color = "red";
+                    resDiv.innerText = "Error al procesar respuesta: " + xhr.responseText;
+                }
             }
-        } catch (err) {
-            resDiv.style.color = "red";
-            resDiv.innerText = "Error de red: " + err.message;
-        }
+        };
+        xhr.send();
     }
 
-    // Función para registrar usuarios corregida
-    async function onBtnRegisterClick() {
+   function onBtnRegisterClick() {
         const u = document.getElementById("regUser").value;
         const p = document.getElementById("regPass").value;
         const resDiv = document.getElementById("resultado");
@@ -78,73 +91,71 @@
         resDiv.style.color = "black";
         resDiv.innerText = "Procesando registro en el servidor...";
 
-        try {
-           const urlDestino = BASE_URL + "/register?username=" + encodeURIComponent(u) + "&password=" + encodeURIComponent(p);
-           const response = await fetch(urlDestino);
-           const data = await response.json();
-           
-           // CORRECCIÓN: Se evalúa data.status o la existencia de respuesta exitosa del manejador
-            if (response.ok && !data.error) {
-                resDiv.style.color = "green";
-                resDiv.innerText = "Usuario creado con éxito: " + JSON.stringify(data);
-                document.getElementById("regUser").value = "";
-                document.getElementById("regPass").value = "";
-            } else {
-                resDiv.style.color = "red";
-                resDiv.innerText = "Error en el registro: " + (data.error || JSON.stringify(data));
+        const xhr = new XMLHttpRequest();
+        // Cambiar metodo de GET a POST ---
+        xhr.open("POST", BASE_URL + "/register", true);
+        
+        // Asegurar cabeceras correctas (Content-Type y Version) ---
+        xhr.setRequestHeader("Content-Type", "application/json"); // Obligatorio para enviar JSON
+        xhr.setRequestHeader("x-api-version", "1.0"); // Cabecera requerida por Punto 3
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                try {
+                    const data = JSON.parse(xhr.responseText);
+                    // 
+                    if (xhr.status === 200 && !data.exception) {
+                        resDiv.style.color = "green";
+                        resDiv.innerText = "Usuario creado con éxito. ID asignado: " + data.userId;
+                        document.getElementById("regUser").value = "";
+                        document.getElementById("regPass").value = "";
+                    } else {
+                        resDiv.style.color = "red";
+                        
+                        resDiv.innerText = "Fallo en Registro [" + data.exception + "]: " + data.detail;
+                    }
+                } catch (e) {
+                    resDiv.style.color = "red";
+                    resDiv.innerText = "Error de conexión o respuesta inválida del servidor.";
+                }
             }
-        } catch (err) {
-            resDiv.style.color = "red";
-            resDiv.innerText = "Error al conectar para registrar usuario: " + err.message;
-        }
+        };
+
+      
+        const payload = {
+            username: u,
+            password: p
+        };
+        xhr.send(JSON.stringify(payload)); // envia la cadena JSON
     }
 
-    // Función para interactuar con el endpoint síncrono /login del Backend
-    async function onBtnLoginClick() {
+    function onBtnLoginClick() {
         const u = document.getElementById("txtUser").value;
         const p = document.getElementById("txtPass").value;
         const resDiv = document.getElementById("resultado");
 
-        try {
-            const urlDestino = BASE_URL + "/login?username=" + encodeURIComponent(u) + "&password=" + encodeURIComponent(p);
-            const response = await fetch(urlDestino);
-            const data = await response.json();
+        // Simulacion
+        // El usuario 'admin' tiene id '2', cualquier otro simulará id '1' ('test_user')
+        currentUserId = (u === "admin") ? "2" : "1"; 
+        currentApiKey = p; 
 
-            if (data.status === "success") 
-            {
-                currentSessionId = data.sessionId;
-                
-                document.getElementById("sessionStatus").innerText = "Sesión Activa: " + u;
-                document.getElementById("sessionStatus").style.color = "green";
-                document.getElementById("btnLogin").disabled = true;
-                document.getElementById("btnLogout").disabled = false;
-                resDiv.innerText = "Autenticación exitosa.";
-                resDiv.style.color = "green";
-            } else {
-                resDiv.innerText = "Fallo de Login: " + data.error;
-                resDiv.style.color = "red";
-            }
-        } catch (err) {
-            resDiv.innerText = "Error al conectar para login: " + err.message;
-            resDiv.style.color = "red";
-        }
+        document.getElementById("sessionStatus").innerText = "Credenciales Listas (ID: " + currentUserId + ")";
+        document.getElementById("sessionStatus").style.color = "green";
+        document.getElementById("btnLogin").disabled = true;
+        document.getElementById("btnLogout").disabled = false;
+        resDiv.innerText = "Variables de cabecera HTTP configuradas de forma transversal.";
+        resDiv.style.color = "green";
     }
 
-    // Función para destruir la sesión activa mediante la webAPI
-    async function onBtnLogoutClick() 
+    function onBtnLogoutClick() 
     {
-        try { 
-            await fetch(BASE_URL + "/logout?sessionId=" + currentSessionId);
-        } catch (e) {
-            // Falla silenciosa
-        }
-    
-        currentSessionId = null;
+        currentUserId = null;
+        currentApiKey = null;
         document.getElementById("sessionStatus").innerText = "Sesión Cerrada";
         document.getElementById("sessionStatus").style.color = "red";
         document.getElementById("btnLogin").disabled = false;
         document.getElementById("btnLogout").disabled = true;
-        document.getElementById("resultado").innerText = "Sesión destruida correctamente.";
+        document.getElementById("resultado").innerText = "Cabeceras de autenticación limpiadas del frontend.";
         document.getElementById("resultado").style.color = "black";
     }
 
